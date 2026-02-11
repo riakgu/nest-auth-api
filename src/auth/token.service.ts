@@ -73,4 +73,8 @@ export class TokenService {
 
     return this.generateAccessToken(payload.sub);
   }
+
+  async revokeRefreshToken(userId: number) {
+    await this.redisService.getClient().del(`refresh_token:${userId}`);
+  }
 }

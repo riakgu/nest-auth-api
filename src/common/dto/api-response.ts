@@ -16,7 +16,7 @@ export class ApiResponse<T> {
   }
 
   static success<T>(
-    data: T,
+    data?: T,
     message?: string,
     statusCode?: number,
   ): ApiResponse<T> {

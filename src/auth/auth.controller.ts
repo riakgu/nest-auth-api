@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import type {
   RegisterRequest,
@@ -14,6 +22,7 @@ import {
 import { ApiResponse } from '../common/dto/api-response';
 import { ZodValidationPipe } from '../common/pipe/zod-validation.pipe';
 import { RefreshResponse } from './dto/refresh-response';
+import { AuthGuard } from './auth.guard';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -50,5 +59,18 @@ export class AuthController {
     const refresh = await this.authService.refresh(request);
 
     return ApiResponse.success(refresh, 'User refresh token', HttpStatus.OK);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() request) {
+    await this.authService.logout(request.user.sub);
+
+    return ApiResponse.success(
+      undefined,
+      'Logged out successfully',
+      HttpStatus.OK,
+    );
   }
 }

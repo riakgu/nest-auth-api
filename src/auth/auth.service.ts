@@ -80,4 +80,8 @@ export class AuthService {
     );
     return new RefreshResponse(newAccessToken);
   }
+
+  async logout(userId: number) {
+    await this.tokenService.revokeRefreshToken(userId);
+  }
 }
