@@ -20,7 +20,7 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  async register(request: RegisterRequest): Promise<UserResponse> {
+  async register(request: RegisterRequest): Promise<AuthResponse> {
     const existingEmail = await this.userRepository.findUserByEmail(
       request.email,
     );
@@ -39,7 +39,16 @@ export class AuthService {
 
     this.logger.info(`User registered with email: ${user.email}`);
 
-    return user;
+    const accessToken = this.tokenService.generateAccessToken(user.id);
+    const refreshToken = this.tokenService.generateRefreshToken(user.id);
+
+    await this.tokenService.storeRefreshToken(user.id, refreshToken);
+
+    return new AuthResponse(
+      UserResponse.fromUser(user),
+      accessToken,
+      refreshToken,
+    );
   }
 
   async login(request: LoginRequest): Promise<AuthResponse> {

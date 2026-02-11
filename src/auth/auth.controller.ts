@@ -4,7 +4,6 @@ import type { RegisterRequest, LoginRequest, AuthResponse } from './dto';
 import { RegisterRequestSchema, LoginRequestSchema } from './dto';
 import { ApiResponse } from '../common/dto/api-response';
 import { ZodValidationPipe } from '../common/pipe/zod-validation.pipe';
-import { UserResponse } from '../user/dto';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -15,10 +14,10 @@ export class AuthController {
   async register(
     @Body(new ZodValidationPipe(RegisterRequestSchema))
     request: RegisterRequest,
-  ): Promise<ApiResponse<UserResponse>> {
-    const user = await this.authService.register(request);
+  ): Promise<ApiResponse<AuthResponse>> {
+    const auth = await this.authService.register(request);
 
-    return ApiResponse.success(user, 'User registered', HttpStatus.CREATED);
+    return ApiResponse.success(auth, 'User registered', HttpStatus.CREATED);
   }
 
   @Post('/login')
