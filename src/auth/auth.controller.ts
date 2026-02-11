@@ -1,10 +1,10 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import type { RegisterRequest } from './dto/register-request';
-import { RegisterRequestSchema } from './dto/register-request';
+import type { RegisterRequest, LoginRequest, AuthResponse } from './dto';
+import { RegisterRequestSchema, LoginRequestSchema } from './dto';
 import { ApiResponse } from '../common/dto/api-response';
-import { UserResponse } from '../user/dto/user-response';
 import { ZodValidationPipe } from '../common/pipe/zod-validation.pipe';
+import { UserResponse } from '../user/dto';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -19,5 +19,16 @@ export class AuthController {
     const user = await this.authService.register(request);
 
     return ApiResponse.success(user, 'User registered', HttpStatus.CREATED);
+  }
+
+  @Post('/login')
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Body(new ZodValidationPipe(LoginRequestSchema))
+    request: LoginRequest,
+  ): Promise<ApiResponse<AuthResponse>> {
+    const auth = await this.authService.login(request);
+
+    return ApiResponse.success(auth, 'User login successfully', HttpStatus.OK);
   }
 }
