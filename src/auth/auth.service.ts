@@ -11,6 +11,8 @@ import * as bcrypt from 'bcrypt';
 import { RegisterRequest, LoginRequest, AuthResponse } from './dto';
 import { UserResponse } from '../user/dto';
 import { TokenService } from './token.service';
+import { RefreshRequest } from './dto/refresh-request';
+import { RefreshResponse } from './dto/refresh-response';
 
 @Injectable()
 export class AuthService {
@@ -70,5 +72,12 @@ export class AuthService {
       accessToken,
       refreshToken,
     );
+  }
+
+  async refresh(request: RefreshRequest): Promise<RefreshResponse> {
+    const newAccessToken = await this.tokenService.refreshAccessToken(
+      request.refreshToken,
+    );
+    return new RefreshResponse(newAccessToken);
   }
 }

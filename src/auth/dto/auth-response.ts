@@ -1,4 +1,4 @@
-import { UserResponse } from '../../user/dto/user-response';
+import { UserResponse } from '../../user/dto';
 
 export class AuthResponse {
   user: UserResponse;
