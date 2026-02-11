@@ -2,8 +2,8 @@ import { Global, Module } from '@nestjs/common';
 import * as winston from 'winston';
 import { WinstonModule } from 'nest-winston';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaService } from './prisma.service';
-import { RedisService } from './redis.service';
+import { PrismaService } from './service/prisma.service';
+import { RedisService } from './service/redis.service';
 
 @Global()
 @Module({
