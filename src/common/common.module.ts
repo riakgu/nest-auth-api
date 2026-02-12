@@ -4,6 +4,7 @@ import { WinstonModule } from 'nest-winston';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './service/prisma.service';
 import { RedisService } from './service/redis.service';
+import { GlobalExceptionFilter } from './filter/http-exception.filter';
 
 @Global()
 @Module({
@@ -16,7 +17,7 @@ import { RedisService } from './service/redis.service';
       isGlobal: true,
     }),
   ],
-  providers: [PrismaService, RedisService],
-  exports: [PrismaService, RedisService],
+  providers: [PrismaService, RedisService, GlobalExceptionFilter],
+  exports: [PrismaService, RedisService, GlobalExceptionFilter],
 })
-export class CommonModule {}
+export class CommonModule { }
