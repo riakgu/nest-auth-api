@@ -11,6 +11,12 @@ export class UserRepository {
     });
   }
 
+  async findUserById(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
   async save(data: { email: string; name: string; password: string }) {
     return this.prisma.user.create({
       data,
@@ -21,12 +27,6 @@ export class UserRepository {
         created_at: true,
         updated_at: true,
       },
-    });
-  }
-
-  async findUserById(userId: number) {
-    return this.prisma.user.findUnique({
-      where: { id: userId },
     });
   }
 }

@@ -22,12 +22,11 @@ import {
 } from './dto';
 import { ApiResponse } from '../common/dto/api-response';
 import { ZodValidationPipe } from '../common/pipe/zod-validation.pipe';
-import { RefreshResponse } from './dto/refresh-response';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('/api/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('/register')
   @HttpCode(HttpStatus.CREATED)
@@ -56,10 +55,10 @@ export class AuthController {
   async refresh(
     @Body(new ZodValidationPipe(RefreshRequestSchema))
     request: RefreshRequest,
-  ): Promise<ApiResponse<RefreshResponse>> {
-    const refresh = await this.authService.refresh(request);
+  ): Promise<ApiResponse<AuthResponse>> {
+    const auth = await this.authService.refresh(request);
 
-    return ApiResponse.success(refresh, 'User refresh token', HttpStatus.OK);
+    return ApiResponse.success(auth, 'Token refreshed', HttpStatus.OK);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,11 +67,7 @@ export class AuthController {
   async logout(@Req() request) {
     await this.authService.logout(request.user.userId);
 
-    return ApiResponse.success(
-      undefined,
-      'Logged out successfully',
-      HttpStatus.OK,
-    );
+    return ApiResponse.message('Logged out successfully');
   }
 
   @UseGuards(JwtAuthGuard)

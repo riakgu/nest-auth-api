@@ -17,7 +17,7 @@ import {
 } from './dto';
 import { UserResponse } from '../user/dto';
 import { JwtTokenService } from './jwt-token.service';
-import { RefreshResponse } from './dto/refresh-response';
+
 
 @Injectable()
 export class AuthService {
@@ -25,7 +25,7 @@ export class AuthService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private userRepository: UserRepository,
     private jwtTokenService: JwtTokenService,
-  ) {}
+  ) { }
 
   async register(request: RegisterRequest): Promise<AuthResponse> {
     const existingEmail = await this.userRepository.findUserByEmail(
@@ -79,11 +79,29 @@ export class AuthService {
     );
   }
 
-  async refresh(request: RefreshRequest): Promise<RefreshResponse> {
-    const newAccessToken = await this.jwtTokenService.refreshAccessToken(
+  async refresh(request: RefreshRequest): Promise<AuthResponse> {
+    const payload = await this.jwtTokenService.verifyRefreshToken(
       request.refreshToken,
     );
-    return new RefreshResponse(newAccessToken);
+
+    const user = await this.userRepository.findUserById(payload.sub);
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const accessToken = this.jwtTokenService.generateAccessToken(user.id);
+    const refreshToken = this.jwtTokenService.generateRefreshToken(user.id);
+
+    await this.jwtTokenService.storeRefreshToken(user.id, refreshToken);
+
+    this.logger.info(`Token refreshed for user: ${user.email}`);
+
+    return new AuthResponse(
+      UserResponse.fromUser(user),
+      accessToken,
+      refreshToken,
+    );
   }
 
   async logout(userId: number) {

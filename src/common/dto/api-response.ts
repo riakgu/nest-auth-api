@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 export class ApiResponse<T> {
   statusCode: number;
   message?: string;
@@ -23,6 +25,16 @@ export class ApiResponse<T> {
     return new ApiResponse<T>({
       message,
       data,
+      statusCode,
+    });
+  }
+
+  static message(
+    message: string,
+    statusCode: number = HttpStatus.OK,
+  ): ApiResponse<null> {
+    return new ApiResponse<null>({
+      message,
       statusCode,
     });
   }
