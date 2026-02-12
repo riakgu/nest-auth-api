@@ -2,6 +2,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -87,5 +88,15 @@ export class AuthService {
 
   async logout(userId: number) {
     await this.jwtTokenService.revokeRefreshToken(userId);
+  }
+
+  async getMe(userId: number): Promise<UserResponse> {
+    const user = await this.userRepository.findUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return UserResponse.fromUser(user);
   }
 }

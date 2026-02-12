@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -72,5 +73,14 @@ export class AuthController {
       'Logged out successfully',
       HttpStatus.OK,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/me')
+  @HttpCode(HttpStatus.OK)
+  async getMe(@Req() request) {
+    const user = await this.authService.getMe(request.user.userId);
+
+    return ApiResponse.success(user, 'Auth user', HttpStatus.OK);
   }
 }
