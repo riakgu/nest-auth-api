@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class TokenService {
+export class JwtTokenService {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private redisService: RedisService,

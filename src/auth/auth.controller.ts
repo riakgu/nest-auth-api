@@ -22,7 +22,7 @@ import {
 import { ApiResponse } from '../common/dto/api-response';
 import { ZodValidationPipe } from '../common/pipe/zod-validation.pipe';
 import { RefreshResponse } from './dto/refresh-response';
-import { AuthGuard } from './auth.guard';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -61,11 +61,11 @@ export class AuthController {
     return ApiResponse.success(refresh, 'User refresh token', HttpStatus.OK);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('/logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Req() request) {
-    await this.authService.logout(request.user.sub);
+    await this.authService.logout(request.user.userId);
 
     return ApiResponse.success(
       undefined,
