@@ -4,7 +4,7 @@ export class ApiResponse<T> {
   statusCode: number;
   message?: string;
   data?: T;
-  errors?: any;
+  errors?: Record<string, string>;
   pagination?: {
     page?: number;
     size?: number;
@@ -40,7 +40,7 @@ export class ApiResponse<T> {
   }
 
   static error(
-    errors: any,
+    errors?: Record<string, string>,
     message?: string,
     statusCode?: number,
   ): ApiResponse<null> {

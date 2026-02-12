@@ -1,3 +1,7 @@
+import type { User } from '../../../prisma/generated/client';
+
+type UserWithoutPassword = Omit<User, 'password'>;
+
 export class UserResponse {
   id: number;
   email: string;
@@ -5,7 +9,7 @@ export class UserResponse {
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(user) {
+  constructor(user: UserWithoutPassword) {
     this.id = user.id;
     this.email = user.email;
     this.name = user.name;
@@ -13,7 +17,7 @@ export class UserResponse {
     this.updatedAt = user.updated_at;
   }
 
-  static fromUser(user) {
+  static fromUser(user: UserWithoutPassword) {
     return new UserResponse(user);
   }
 }

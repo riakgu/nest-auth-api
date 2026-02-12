@@ -20,4 +20,4 @@ import { GlobalExceptionFilter } from './filter/http-exception.filter';
   providers: [PrismaService, RedisService, GlobalExceptionFilter],
   exports: [PrismaService, RedisService, GlobalExceptionFilter],
 })
-export class CommonModule { }
+export class CommonModule {}

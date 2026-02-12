@@ -18,14 +18,13 @@ import {
 import { UserResponse } from '../user/dto';
 import { JwtTokenService } from './jwt-token.service';
 
-
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private userRepository: UserRepository,
     private jwtTokenService: JwtTokenService,
-  ) { }
+  ) {}
 
   async register(request: RegisterRequest): Promise<AuthResponse> {
     const existingEmail = await this.userRepository.findUserByEmail(
@@ -46,10 +45,8 @@ export class AuthService {
 
     this.logger.info(`User registered with email: ${user.email}`);
 
-    const accessToken = this.jwtTokenService.generateAccessToken(user.id);
-    const refreshToken = this.jwtTokenService.generateRefreshToken(user.id);
-
-    await this.jwtTokenService.storeRefreshToken(user.id, refreshToken);
+    const { accessToken, refreshToken } =
+      await this.jwtTokenService.generateTokens(user.id);
 
     return new AuthResponse(
       UserResponse.fromUser(user),
@@ -65,12 +62,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const accessToken = this.jwtTokenService.generateAccessToken(user.id);
-    const refreshToken = this.jwtTokenService.generateRefreshToken(user.id);
-
-    await this.jwtTokenService.storeRefreshToken(user.id, refreshToken);
-
     this.logger.info(`User login successfully with email: ${user.email}`);
+
+    const { accessToken, refreshToken } =
+      await this.jwtTokenService.generateTokens(user.id);
 
     return new AuthResponse(
       UserResponse.fromUser(user),
@@ -90,12 +85,10 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const accessToken = this.jwtTokenService.generateAccessToken(user.id);
-    const refreshToken = this.jwtTokenService.generateRefreshToken(user.id);
-
-    await this.jwtTokenService.storeRefreshToken(user.id, refreshToken);
-
     this.logger.info(`Token refreshed for user: ${user.email}`);
+
+    const { accessToken, refreshToken } =
+      await this.jwtTokenService.generateTokens(user.id);
 
     return new AuthResponse(
       UserResponse.fromUser(user),

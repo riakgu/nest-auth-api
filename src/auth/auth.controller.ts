@@ -23,10 +23,11 @@ import {
 import { ApiResponse } from '../common/dto/api-response';
 import { ZodValidationPipe } from '../common/pipe/zod-validation.pipe';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import type { JwtAuthRequest } from './jwt.strategy';
 
 @Controller('/api/auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('/register')
   @HttpCode(HttpStatus.CREATED)
@@ -64,7 +65,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('/logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() request) {
+  async logout(@Req() request: JwtAuthRequest) {
     await this.authService.logout(request.user.userId);
 
     return ApiResponse.message('Logged out successfully');
@@ -73,7 +74,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   @HttpCode(HttpStatus.OK)
-  async getMe(@Req() request) {
+  async getMe(@Req() request: JwtAuthRequest) {
     const user = await this.authService.getMe(request.user.userId);
 
     return ApiResponse.success(user, 'Auth user', HttpStatus.OK);

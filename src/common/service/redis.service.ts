@@ -1,8 +1,8 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import Redis from 'ioredis';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
@@ -10,12 +10,11 @@ export class RedisService implements OnModuleDestroy {
 
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    private readonly configService: ConfigService,
   ) {
-    if (!process.env.REDIS_URL) {
-      throw new Error('REDIS_URL is not defined');
-    }
+    const redisUrl = this.configService.getOrThrow<string>('REDIS_URL');
 
-    this.redis = new Redis(process.env.REDIS_URL);
+    this.redis = new Redis(redisUrl);
 
     this.redis.on('connect', () => {
       this.logger.info('Redis connected');
